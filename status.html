@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Membership Status Monitor | Gym Membership Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Membership Status Monitor</h1>
+        <p class="page-subtitle">Track active gym memberships and identify expired accounts requiring renewal.</p>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Active Members Panel -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h2 style="font-size: 1.2rem; font-weight: 700; color: #34d399;">
+                <i class="fa-solid fa-circle-check"></i> Active Memberships ({{ active_members|length }})
+            </h2>
+            <span class="badge badge-active"><i class="fa-solid fa-shield"></i> Good Standing</span>
+        </div>
+
+        {% if active_members %}
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Plan</th>
+                        <th>Expires On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in active_members %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ m.full_name }}</div>
+                            <small style="color: var(--text-muted);">{{ m.member_id }} | {{ m.contact_number }}</small>
+                        </td>
+                        <td>{{ m.membership_plan }}</td>
+                        <td style="font-weight: 600; color: #34d399;">{{ m.expiration_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No active memberships found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Expired Members Panel -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h2 style="font-size: 1.2rem; font-weight: 700; color: #f87171;">
+                <i class="fa-solid fa-circle-xmark"></i> Expired Memberships ({{ expired_members|length }})
+            </h2>
+            <span class="badge badge-expired"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</span>
+        </div>
+
+        {% if expired_members %}
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Plan</th>
+                        <th>Expired On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in expired_members %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ m.full_name }}</div>
+                            <small style="color: var(--text-muted);">{{ m.member_id }} | {{ m.contact_number }}</small>
+                        </td>
+                        <td>{{ m.membership_plan }}</td>
+                        <td style="font-weight: 600; color: #f87171;">{{ m.expiration_date }}</td>
+                        <td>
+                            <a href="{{ url_for('payments') }}" class="btn btn-primary btn-sm">
+                                Renew
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div style="text-align: center; color: #34d399; padding: 2rem;">
+                <i class="fa-solid fa-circle-check" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                <p>No memberships are currently expired!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

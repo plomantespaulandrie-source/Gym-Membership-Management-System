@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Record Payment | Gym Membership Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Record Membership Payment</h1>
+        <p class="page-subtitle">Update member payment status, log payment amounts, and extend membership plans.</p>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Payment Entry Form -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem;">
+            <i class="fa-solid fa-receipt"></i> Payment Entry Form
+        </h2>
+
+        <form action="{{ url_for('payments') }}" method="POST">
+            <div class="form-group">
+                <label for="payment_member_select" class="form-label">Select Member <span style="color: var(--danger);">*</span></label>
+                <select class="form-select" id="payment_member_select" name="member_id" required>
+                    <option value="">-- Choose Member --</option>
+                    {% for m in members %}
+                        <option value="{{ m.id }}" data-plan="{{ m.membership_plan }}" data-status="{{ m.membership_status }}" data-exp="{{ m.expiration_date }}">
+                            {{ m.member_id }} - {{ m.full_name }} (Current: {{ m.payment_status }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Selected Member Info Box -->
+            <div style="background: #0f172a; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.82rem;">CURRENT PLAN</span>
+                    <div id="current_plan_badge" style="font-weight: 700; color: var(--primary);">--</div>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.82rem;">EXPIRATION DATE</span>
+                    <div id="current_exp_date" style="font-weight: 700;">--</div>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.82rem;">STATUS</span>
+                    <div>
+                        <span id="current_status_badge" class="badge">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="amount_paid" class="form-label">Payment Amount (₱) <span style="color: var(--danger);">*</span></label>
+                <input type="number" step="0.01" min="0" class="form-control" id="amount_paid" name="amount_paid" placeholder="e.g. 1500.00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="payment_status" class="form-label">Update Payment Status <span style="color: var(--danger);">*</span></label>
+                <select class="form-select" id="payment_status" name="payment_status" required>
+                    {% for st in statuses %}
+                        <option value="{{ st }}" {% if st == 'Paid' %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="extend_plan" class="form-label">Extend / Renew Membership Plan (Optional)</label>
+                <select class="form-select" id="extend_plan" name="extend_plan">
+                    <option value="">-- No Extension (Keep Current Expiration Date) --</option>
+                    {% for pl in plans %}
+                        <option value="{{ pl }}">Extend by {{ pl }}</option>
+                    {% endfor %}
+                </select>
+                <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">
+                    Selecting a plan extension will automatically calculate and update the member's Expiration Date!
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <i class="fa-solid fa-check-circle"></i> Confirm Payment & Update Status
+            </button>
+        </form>
+    </div>
+
+    <!-- Member Payment History / Status Overview -->
+    <div class="card">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem;">
+            <i class="fa-solid fa-list-check"></i> Member Payment Statuses
+        </h2>
+
+        {% if members %}
+        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Total Paid</th>
+                        <th>Payment Status</th>
+                        <th>Last Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in members %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ m.full_name }}</div>
+                            <small style="color: var(--text-muted);">{{ m.member_id }}</small>
+                        </td>
+                        <td style="font-weight: 700; color: #34d399;">
+                            ₱{{ "%.2f"|format(m.amount_paid or 0.0) }}
+                        </td>
+                        <td>
+                            {% if m.payment_status == 'Paid' %}
+                                <span class="badge badge-paid">Paid</span>
+                            {% elif m.payment_status == 'Pending' %}
+                                <span class="badge badge-pending">Pending</span>
+                            {% else %}
+                                <span class="badge badge-overdue">Overdue</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ m.last_payment_date or 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

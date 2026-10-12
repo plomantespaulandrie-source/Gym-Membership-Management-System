@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Search Member | Gym Membership Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Search Member Records</h1>
+        <p class="page-subtitle">Quickly look up gym members by Member ID, Full Name, or Contact Number.</p>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <form action="{{ url_for('search') }}" method="GET" id="searchForm" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; position: relative;">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" 
+                   id="searchInput"
+                   name="query" 
+                   class="form-control search-input" 
+                   placeholder="Type Member ID (e.g. GYM-1001) or Full Name..." 
+                   value="{{ query }}" 
+                   autofocus>
+        </div>
+        <button type="submit" id="searchButton" class="btn btn-primary">
+            <i class="fa-solid fa-magnifying-glass"></i> Search Member
+        </button>
+        {% if query %}
+            <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-xmark"></i> Clear Search
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    {% if query %}
+        <h2 style="font-size: 1.2rem; font-weight: 700;">
+            Search Results for "<span style="color: var(--primary);">{{ query }}</span>" 
+            <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">({{ results|length }} found)</span>
+        </h2>
+    {% else %}
+        <h2 style="font-size: 1.2rem; font-weight: 700;">
+            Member Directory 
+            <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">({{ results|length }} total members)</span>
+        </h2>
+    {% endif %}
+    <small style="color: var(--text-muted);">
+        <i class="fa-solid fa-bolt" style="color: #fbbf24;"></i> Live search active
+    </small>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    {% if results %}
+    <div class="table-responsive">
+        <table class="custom-table" id="membersTable">
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Full Name</th>
+                    <th>Age</th>
+                    <th>Contact Number</th>
+                    <th>Plan</th>
+                    <th>Expiration Date</th>
+                    <th>Payment Status</th>
+                    <th>Membership Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in results %}
+                <tr class="member-row">
+                    <td class="col-id"><strong style="color: var(--primary);">{{ m.member_id }}</strong></td>
+                    <td class="col-name"><strong>{{ m.full_name }}</strong></td>
+                    <td>{{ m.age }}</td>
+                    <td class="col-contact">{{ m.contact_number }}</td>
+                    <td>{{ m.membership_plan }}</td>
+                    <td>
+                        <span style="font-weight: 600; {% if m.membership_status == 'Expired' %}color: #f87171;{% endif %}">
+                            {{ m.expiration_date }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if m.payment_status == 'Paid' %}
+                            <span class="badge badge-paid"><i class="fa-solid fa-check"></i> Paid</span>
+                        {% elif m.payment_status == 'Pending' %}
+                            <span class="badge badge-pending"><i class="fa-solid fa-clock"></i> Pending</span>
+                        {% else %}
+                            <span class="badge badge-overdue"><i class="fa-solid fa-exclamation"></i> Overdue</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if m.membership_status == 'Active' %}
+                            <span class="badge badge-active"><i class="fa-solid fa-circle"></i> Active</span>
+                        {% else %}
+                            <span class="badge badge-expired"><i class="fa-solid fa-circle"></i> Expired</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{{ url_for('edit_member', db_id=m.id) }}" class="btn btn-secondary btn-sm">
+                            <i class="fa-solid fa-user-pen"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            <i class="fa-solid fa-magnifying-glass-minus" style="font-size: 2.5rem; margin-bottom: 1rem; display: block;"></i>
+            <h3>No matching members found</h3>
+            <p style="margin-top: 0.5rem;">No member record matches your search query "{{ query }}".</p>
+            <div style="margin-top: 1rem;">
+                <a href="{{ url_for('search') }}" class="btn btn-secondary btn-sm">View All Members</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

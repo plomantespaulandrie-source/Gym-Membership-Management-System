@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gym Membership Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('dashboard') }}" class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                <span class="brand-title">PULSE GYM MANAGER</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li>
+                    <a href="{{ url_for('dashboard') }}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chart-pie"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('members_list') }}" class="nav-link {% if active_page == 'members' %}active{% endif %}">
+                        <i class="fa-solid fa-users"></i> Member List
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('add_member') }}" class="nav-link {% if active_page == 'add_member' %}active{% endif %}">
+                        <i class="fa-solid fa-user-plus"></i> Add Member
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('search') }}" class="nav-link {% if active_page == 'search' %}active{% endif %}">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('membership_status') }}" class="nav-link {% if active_page == 'status' %}active{% endif %}">
+                        <i class="fa-solid fa-shield-halved"></i> Status Monitor
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('payments') }}" class="nav-link {% if active_page == 'payments' %}active{% endif %}">
+                        <i class="fa-solid fa-credit-card"></i> Payments
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="main-wrapper">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span><i class="fa-solid fa-circle-info"></i> {{ message }}</span>
+                    <button onclick="this.parentElement.remove()" style="background:none; border:none; color:inherit; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Pulse Gym Membership Management System. Designed for Gym Staff & Owners.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

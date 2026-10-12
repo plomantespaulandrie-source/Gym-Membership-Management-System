@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Member | Gym Membership Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Register New Gym Member</h1>
+        <p class="page-subtitle">Enter member details, select a membership plan, and set initial payment status.</p>
+    </div>
+    <a href="{{ url_for('members_list') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Back to Member Directory
+    </a>
+</div>
+
+<div style="max-width: 750px; margin: 0 auto;">
+    <div class="card">
+        <div class="info-box">
+            <i class="fa-solid fa-lightbulb"></i> <strong>Automatic Expiration Date Calculation:</strong> When you pick a Start Date and Membership Plan, the system automatically calculates the Expiration Date below.
+        </div>
+
+        <form action="{{ url_for('add_member') }}" method="POST" id="addMemberForm">
+            <div class="form-group">
+                <label for="full_name" class="form-label">Full Name <span style="color: var(--danger);">*</span></label>
+                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="e.g. John Doe" value="{{ form_data.full_name or '' }}" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label for="age" class="form-label">Age <span style="color: var(--danger);">*</span></label>
+                    <input type="number" class="form-control" id="age" name="age" min="1" max="120" placeholder="e.g. 25" value="{{ form_data.age or '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_number" class="form-label">Contact Number <span style="color: var(--danger);">*</span></label>
+                    <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="e.g. 0917-123-4567" value="{{ form_data.contact_number or '' }}" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label for="membership_plan" class="form-label">Membership Plan <span style="color: var(--danger);">*</span></label>
+                    <select class="form-select" id="membership_plan" name="membership_plan" required>
+                        <option value="">-- Select Plan --</option>
+                        {% for plan in plans %}
+                            <option value="{{ plan }}" {% if form_data.membership_plan == plan %}selected{% endif %}>{{ plan }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_date" class="form-label">Start Date <span style="color: var(--danger);">*</span></label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ form_data.start_date or today }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="expiration_date_preview" class="form-label">Calculated Expiration Date (Auto-generated)</label>
+                <input type="text" class="form-control" id="expiration_date_preview" readonly style="background: #0f172a; color: #34d399; font-weight: 700;" placeholder="Select plan & start date to calculate...">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label for="payment_status" class="form-label">Payment Status <span style="color: var(--danger);">*</span></label>
+                    <select class="form-select" id="payment_status" name="payment_status" required>
+                        {% for status in statuses %}
+                            <option value="{{ status }}" {% if form_data.payment_status == status or (not form_data.payment_status and status == 'Paid') %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount_paid" class="form-label">Initial Amount Paid (₱)</label>
+                    <input type="number" step="0.01" class="form-control" id="amount_paid" name="amount_paid" placeholder="0.00" value="{{ form_data.amount_paid or '0' }}">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                    <i class="fa-solid fa-user-plus"></i> Save Member Record
+                </button>
+                <a href="{{ url_for('members_list') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

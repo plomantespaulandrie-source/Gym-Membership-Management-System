@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}All Members | Gym Membership Management System{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Gym Member Directory</h1>
+        <p class="page-subtitle">View, search, edit, and manage registered gym members.</p>
+    </div>
+    <a href="{{ url_for('add_member') }}" class="btn btn-primary">
+        <i class="fa-solid fa-user-plus"></i> Add New Member
+    </a>
+</div>
+
+<!-- Filter Tabs & Quick Search Bar -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+    <div class="filter-tabs" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+        <a href="{{ url_for('members_list', filter='all') }}" class="filter-tab {% if filter_type == 'all' %}active{% endif %}">
+            All Members
+        </a>
+        <a href="{{ url_for('members_list', filter='active') }}" class="filter-tab {% if filter_type == 'active' %}active{% endif %}">
+            <i class="fa-solid fa-check"></i> Active
+        </a>
+        <a href="{{ url_for('members_list', filter='expired') }}" class="filter-tab {% if filter_type == 'expired' %}active{% endif %}">
+            <i class="fa-solid fa-xmark"></i> Expired
+        </a>
+        <a href="{{ url_for('members_list', filter='pending') }}" class="filter-tab {% if filter_type == 'pending' %}active{% endif %}">
+            <i class="fa-solid fa-clock"></i> Pending Payment
+        </a>
+    </div>
+
+    <!-- Quick Search on Directory -->
+    <div style="position: relative; min-width: 280px; max-width: 360px; flex: 1;">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" 
+               id="memberListSearch" 
+               class="form-control search-input" 
+               placeholder="Filter by Name, ID, or Phone..." 
+               style="padding-top: 0.55rem; padding-bottom: 0.55rem;">
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    {% if members %}
+    <div class="table-responsive">
+        <table class="custom-table" id="memberDirectoryTable">
+            <thead>
+                <tr>
+                    <th>Member ID</th>
+                    <th>Full Name</th>
+                    <th>Age</th>
+                    <th>Contact Number</th>
+                    <th>Plan</th>
+                    <th>Start Date</th>
+                    <th>Expiration Date</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in members %}
+                <tr>
+                    <td><strong style="color: var(--primary);">{{ m.member_id }}</strong></td>
+                    <td><strong style="font-size: 1rem;">{{ m.full_name }}</strong></td>
+                    <td>{{ m.age }}</td>
+                    <td>{{ m.contact_number }}</td>
+                    <td>{{ m.membership_plan }}</td>
+                    <td>{{ m.start_date }}</td>
+                    <td>
+                        <span style="font-weight: 600; {% if m.membership_status == 'Expired' %}color: #f87171;{% endif %}">
+                            {{ m.expiration_date }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if m.payment_status == 'Paid' %}
+                            <span class="badge badge-paid"><i class="fa-solid fa-check"></i> Paid</span>
+                        {% elif m.payment_status == 'Pending' %}
+                            <span class="badge badge-pending"><i class="fa-solid fa-clock"></i> Pending</span>
+                        {% else %}
+                            <span class="badge badge-overdue"><i class="fa-solid fa-exclamation"></i> Overdue</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if m.membership_status == 'Active' %}
+                            <span class="badge badge-active"><i class="fa-solid fa-circle"></i> Active</span>
+                        {% else %}
+                            <span class="badge badge-expired"><i class="fa-solid fa-circle"></i> Expired</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="action-btns" style="justify-content: flex-end;">
+                            <a href="{{ url_for('edit_member', db_id=m.id) }}" class="btn btn-secondary btn-sm" title="Edit Information">
+                                <i class="fa-solid fa-user-pen"></i> Edit
+                            </a>
+                            <form action="{{ url_for('delete_member', db_id=m.id) }}" method="POST" class="delete-form" data-member-name="{{ m.full_name }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" title="Delete Member">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            <i class="fa-solid fa-users-slash" style="font-size: 2.5rem; margin-bottom: 1rem; display: block;"></i>
+            <h3>No members found</h3>
+            <p style="margin-top: 0.5rem;">Try selecting a different filter or add a new member record.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
