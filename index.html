@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse Gym Membership Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --danger: #f43f5e;
+            --danger-bg: rgba(244, 63, 94, 0.15);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Header */
+        .navbar {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-link:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+        .nav-link.active {
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Layout */
+        .main-wrapper {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px; }
+        .page-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+
+        /* KPI Cards */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover { border-color: #475569; }
+
+        .stat-card { display: flex; align-items: center; gap: 1.25rem; }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .stat-icon.blue { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .stat-icon.green { background: var(--success-bg); color: #34d399; }
+        .stat-icon.red { background: var(--danger-bg); color: #f87171; }
+        .stat-icon.amber { background: var(--warning-bg); color: #fbbf24; }
+
+        .stat-val { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .badge-active, .badge-paid {
+            background: var(--success-bg);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-expired {
+            background: var(--danger-bg);
+            color: #f87171;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .badge-pending, .badge-overdue {
+            background: var(--warning-bg);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            text-align: left;
+        }
+
+        .custom-table th {
+            background: #0f172a;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .custom-table tbody tr:hover { background: var(--bg-card-hover); }
+
+        /* Forms & Inputs */
+        .form-group { margin-bottom: 1.3rem; }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.3rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        .btn-secondary { background: #334155; color: var(--text-main); }
+        .btn-secondary:hover { background: #475569; }
+
+        .btn-danger { background: var(--danger); color: #ffffff; }
+        .btn-danger:hover { background: #e11d48; }
+
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.82rem; }
+
+        .action-btns { display: flex; align-items: center; gap: 0.4rem; }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active { background: var(--primary); color: #ffffff; }
+
+        .search-box { position: relative; }
+        .search-input { padding-left: 2.75rem; }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Toast Alert */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 0.92rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success { border-color: var(--success); color: #34d399; }
+        .toast.error { border-color: var(--danger); color: #f87171; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tab Views */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand" onclick="switchTab('dashboard')">
+                <div class="brand-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                <span class="brand-title">PULSE GYM MANAGER</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><button class="nav-link active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button></li>
+                <li><button class="nav-link" onclick="switchTab('members')"><i class="fa-solid fa-users"></i> Member List</button></li>
+                <li><button class="nav-link" onclick="switchTab('add')"><i class="fa-solid fa-user-plus"></i> Add Member</button></li>
+                <li><button class="nav-link" onclick="switchTab('search')"><i class="fa-solid fa-magnifying-glass"></i> Search</button></li>
+                <li><button class="nav-link" onclick="switchTab('status')"><i class="fa-solid fa-shield-halved"></i> Status Monitor</button></li>
+                <li><button class="nav-link" onclick="switchTab('payments')"><i class="fa-solid fa-credit-card"></i> Payments</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-wrapper">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gym Overview Dashboard</h1>
+                    <p class="page-subtitle">Real-time status of members, memberships, and pending payments.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="btn btn-primary" onclick="switchTab('add')"><i class="fa-solid fa-user-plus"></i> Add New Member</button>
+                    <button class="btn btn-secondary" onclick="switchTab('payments')"><i class="fa-solid fa-credit-card"></i> Record Payment</button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid-4">
+                <div class="card stat-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <div class="stat-val" id="stat-total">0</div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
+                    <div>
+                        <div class="stat-val" id="stat-active" style="color: #34d399;">0</div>
+                        <div class="stat-label">Active Memberships</div>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon red"><i class="fa-solid fa-user-xmark"></i></div>
+                    <div>
+                        <div class="stat-val" id="stat-expired" style="color: #f87171;">0</div>
+                        <div class="stat-label">Expired Memberships</div>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
+                    <div>
+                        <div class="stat-val" id="stat-pending" style="color: #fbbf24;">0</div>
+                        <div class="stat-label">Pending Payments</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- Recent Registrations -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Registrations</h2>
+                        <a href="javascript:void(0)" onclick="switchTab('members')" style="color: var(--primary); text-decoration: none; font-size: 0.88rem; font-weight: 600;">View All &rarr;</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr><th>Member</th><th>Plan</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="recentMembersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Expired Attention -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: #f87171;"><i class="fa-solid fa-triangle-exclamation"></i> Requires Attention (Expired)</h2>
+                        <a href="javascript:void(0)" onclick="switchTab('status')" style="color: var(--text-muted); text-decoration: none; font-size: 0.88rem;">Status Monitor &rarr;</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr><th>Member ID</th><th>Name</th><th>Expired On</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="expiredMembersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MEMBER DIRECTORY VIEW -->
+        <section id="tab-members" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gym Member Directory</h1>
+                    <p class="page-subtitle">View, search, edit, and manage registered gym members.</p>
+                </div>
+                <button class="btn btn-primary" onclick="switchTab('add')"><i class="fa-solid fa-user-plus"></i> Add New Member</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+                <div class="filter-tabs" id="directoryFilterTabs">
+                    <button class="filter-tab active" onclick="setMemberFilter('all', this)">All Members</button>
+                    <button class="filter-tab" onclick="setMemberFilter('active', this)"><i class="fa-solid fa-check"></i> Active</button>
+                    <button class="filter-tab" onclick="setMemberFilter('expired', this)"><i class="fa-solid fa-xmark"></i> Expired</button>
+                    <button class="filter-tab" onclick="setMemberFilter('pending', this)"><i class="fa-solid fa-clock"></i> Pending Payment</button>
+                </div>
+
+                <div style="position: relative; min-width: 280px; max-width: 360px; flex: 1;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="memberDirectorySearch" class="form-control search-input" placeholder="Filter by Name, ID, or Phone..." oninput="renderMembersTable()">
+                </div>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Member ID</th><th>Full Name</th><th>Age</th><th>Contact</th><th>Plan</th><th>Expires On</th><th>Payment</th><th>Status</th><th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersDirectoryTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ADD / EDIT MEMBER VIEW -->
+        <section id="tab-add" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title" id="formHeaderTitle">Register New Gym Member</h1>
+                    <p class="page-subtitle">Enter member details, select a membership plan, and set payment status.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="switchTab('members')"><i class="fa-solid fa-arrow-left"></i> Back to Directory</button>
+            </div>
+
+            <div style="max-width: 750px; margin: 0 auto;">
+                <div class="card">
+                    <div class="info-box">
+                        <i class="fa-solid fa-lightbulb"></i> <strong>Automatic Expiration Date Calculation:</strong> The system automatically calculates the expiration date as soon as you select a Start Date and Membership Plan.
+                    </div>
+
+                    <form id="memberForm" onsubmit="handleSaveMember(event)">
+                        <input type="hidden" id="editMemberIndex" value="-1">
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name <span style="color: var(--danger);">*</span></label>
+                            <input type="text" class="form-control" id="form_full_name" placeholder="e.g. John Doe" required>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                            <div class="form-group">
+                                <label class="form-label">Age <span style="color: var(--danger);">*</span></label>
+                                <input type="number" class="form-control" id="form_age" min="1" max="120" placeholder="e.g. 25" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Contact Number <span style="color: var(--danger);">*</span></label>
+                                <input type="text" class="form-control" id="form_contact" placeholder="e.g. 0917-123-4567" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                            <div class="form-group">
+                                <label class="form-label">Membership Plan <span style="color: var(--danger);">*</span></label>
+                                <select class="form-select" id="form_plan" onchange="autoCalculateExpiration()" required>
+                                    <option value="Monthly">Monthly (+1 Month)</option>
+                                    <option value="3 Months">3 Months (+3 Months)</option>
+                                    <option value="6 Months">6 Months (+6 Months)</option>
+                                    <option value="1 Year">1 Year (+1 Year)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Start Date <span style="color: var(--danger);">*</span></label>
+                                <input type="date" class="form-control" id="form_start_date" onchange="autoCalculateExpiration()" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Calculated Expiration Date (Auto-generated)</label>
+                            <input type="text" class="form-control" id="form_expiration_preview" readonly style="background: #0f172a; color: #34d399; font-weight: 700;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                            <div class="form-group">
+                                <label class="form-label">Payment Status <span style="color: var(--danger);">*</span></label>
+                                <select class="form-select" id="form_payment_status" required>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Overdue">Overdue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Amount Paid (₱)</label>
+                                <input type="number" step="0.01" class="form-control" id="form_amount_paid" placeholder="0.00" value="0.00">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;"><i class="fa-solid fa-save"></i> Save Member Record</button>
+                            <button type="button" class="btn btn-secondary" onclick="switchTab('members')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SEARCH VIEW -->
+        <section id="tab-search" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Search Member Records</h1>
+                    <p class="page-subtitle">Quickly look up gym members by Member ID, Full Name, or Contact Number.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 2rem;">
+                <div style="position: relative;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="liveSearchInput" class="form-control search-input" placeholder="Type Member ID (e.g. GYM-1001) or Full Name..." oninput="renderSearchTable()">
+                </div>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Member ID</th><th>Full Name</th><th>Age</th><th>Contact</th><th>Plan</th><th>Expires On</th><th>Payment</th><th>Status</th><th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchResultsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. STATUS MONITOR VIEW -->
+        <section id="tab-status" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Membership Status Monitor</h1>
+                    <p class="page-subtitle">Track active gym memberships and identify expired accounts requiring renewal.</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h2 style="font-size: 1.2rem; font-weight: 700; color: #34d399;"><i class="fa-solid fa-circle-check"></i> Active Memberships</h2>
+                        <span class="badge badge-active"><i class="fa-solid fa-shield"></i> Good Standing</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead><tr><th>Member</th><th>Plan</th><th>Expires On</th></tr></thead>
+                            <tbody id="statusActiveTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                        <h2 style="font-size: 1.2rem; font-weight: 700; color: #f87171;"><i class="fa-solid fa-circle-xmark"></i> Expired Memberships</h2>
+                        <span class="badge badge-expired"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead><tr><th>Member</th><th>Plan</th><th>Expired On</th><th>Action</th></tr></thead>
+                            <tbody id="statusExpiredTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. PAYMENTS VIEW -->
+        <section id="tab-payments" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Record Membership Payment</h1>
+                    <p class="page-subtitle">Update member payment status, log payment amounts, and extend membership plans.</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem;"><i class="fa-solid fa-receipt"></i> Payment Entry Form</h2>
+                    <form onsubmit="handleRecordPayment(event)">
+                        <div class="form-group">
+                            <label class="form-label">Select Member <span style="color: var(--danger);">*</span></label>
+                            <select class="form-select" id="payment_member_select" onchange="handlePaymentMemberChange()" required>
+                                <option value="">-- Choose Member --</option>
+                            </select>
+                        </div>
+
+                        <div style="background: #0f172a; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.82rem;">CURRENT PLAN</span>
+                                <div id="pay_info_plan" style="font-weight: 700; color: var(--primary);">--</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.82rem;">EXPIRATION DATE</span>
+                                <div id="pay_info_exp" style="font-weight: 700;">--</div>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.82rem;">STATUS</span>
+                                <div><span id="pay_info_status" class="badge">--</span></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Payment Amount (₱) <span style="color: var(--danger);">*</span></label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="pay_amount" placeholder="e.g. 1500.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Update Payment Status <span style="color: var(--danger);">*</span></label>
+                            <select class="form-select" id="pay_status_update" required>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Extend / Renew Membership Plan (Optional)</label>
+                            <select class="form-select" id="pay_extend_plan">
+                                <option value="">-- No Extension (Keep Current Expiration) --</option>
+                                <option value="Monthly">Extend by Monthly (+1 Month)</option>
+                                <option value="3 Months">Extend by 3 Months (+3 Months)</option>
+                                <option value="6 Months">Extend by 6 Months (+6 Months)</option>
+                                <option value="1 Year">Extend by 1 Year (+1 Year)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"><i class="fa-solid fa-check-circle"></i> Confirm Payment & Update</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem;"><i class="fa-solid fa-list-check"></i> Member Payment Statuses</h2>
+                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr><th>Member</th><th>Total Paid</th><th>Payment Status</th></tr>
+                            </thead>
+                            <tbody id="paymentHistoryTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Pulse Gym Membership Management System. Designed for Gym Staff & Owners.</p>
+    </footer>
+
+    <!-- Interactive Client-side Script -->
+    <script>
+        // Default Seed Members
+        const INITIAL_MEMBERS = [
+            { id: "GYM-1001", name: "Alex Rivera", age: 28, contact: "0917-555-0192", plan: "Monthly", startDate: "2026-09-01", expDate: "2026-10-01", paymentStatus: "Paid", amountPaid: 1500.00 },
+            { id: "GYM-1002", name: "Samantha Chen", age: 34, contact: "0918-555-0143", plan: "3 Months", startDate: "2026-08-15", expDate: "2026-11-15", paymentStatus: "Paid", amountPaid: 4000.00 },
+            { id: "GYM-1003", name: "Marcus Vance", age: 42, contact: "0920-555-0178", plan: "Monthly", startDate: "2026-08-01", expDate: "2026-09-01", paymentStatus: "Paid", amountPaid: 1500.00 },
+            { id: "GYM-1004", name: "Elena Rostova", age: 23, contact: "0919-555-0155", plan: "6 Months", startDate: "2026-09-10", expDate: "2027-03-10", paymentStatus: "Pending", amountPaid: 0.00 },
+            { id: "GYM-1005", name: "David Miller", age: 31, contact: "0922-555-0189", plan: "1 Year", startDate: "2026-01-10", expDate: "2027-01-10", paymentStatus: "Paid", amountPaid: 14000.00 }
+        ];
+
+        let members = JSON.parse(localStorage.getItem('gym_members')) || INITIAL_MEMBERS;
+        let activeFilter = 'all';
+
+        function saveMembers() {
+            localStorage.setItem('gym_members', JSON.stringify(members));
+            refreshAllViews();
+        }
+
+        function calculateExpirationDate(startDateStr, plan) {
+            const date = new Date(startDateStr);
+            if (isNaN(date)) return '';
+            
+            let monthsToAdd = 1;
+            if (plan === '3 Months') monthsToAdd = 3;
+            else if (plan === '6 Months') monthsToAdd = 6;
+            else if (plan === '1 Year') monthsToAdd = 12;
+
+            const targetMonth = date.getMonth() + monthsToAdd;
+            date.setMonth(targetMonth);
+            return date.toISOString().split('T')[0];
+        }
+
+        function getMembershipStatus(expDateStr) {
+            const today = new Date().toISOString().split('T')[0];
+            return expDateStr >= today ? 'Active' : 'Expired';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'circle-check' : 'circle-exclamation'}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
+
+            const navIndex = ['dashboard', 'members', 'add', 'search', 'status', 'payments'].indexOf(tabId);
+            if (navIndex !== -1) {
+                const links = document.querySelectorAll('.nav-link');
+                if (links[navIndex]) links[navIndex].classList.add('active');
+            }
+
+            if (tabId === 'add' && document.getElementById('editMemberIndex').value === '-1') {
+                resetAddMemberForm();
+            }
+
+            refreshAllViews();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetAddMemberForm() {
+            document.getElementById('editMemberIndex').value = '-1';
+            document.getElementById('formHeaderTitle').textContent = 'Register New Gym Member';
+            document.getElementById('form_full_name').value = '';
+            document.getElementById('form_age').value = '';
+            document.getElementById('form_contact').value = '';
+            document.getElementById('form_plan').value = 'Monthly';
+            document.getElementById('form_start_date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('form_payment_status').value = 'Paid';
+            document.getElementById('form_amount_paid').value = '1500.00';
+            autoCalculateExpiration();
+        }
+
+        function autoCalculateExpiration() {
+            const start = document.getElementById('form_start_date').value;
+            const plan = document.getElementById('form_plan').value;
+            if (start && plan) {
+                document.getElementById('form_expiration_preview').value = calculateExpirationDate(start, plan);
+            }
+        }
+
+        function handleSaveMember(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('editMemberIndex').value);
+            const name = document.getElementById('form_full_name').value.trim();
+            const age = parseInt(document.getElementById('form_age').value);
+            const contact = document.getElementById('form_contact').value.trim();
+            const plan = document.getElementById('form_plan').value;
+            const startDate = document.getElementById('form_start_date').value;
+            const expDate = calculateExpirationDate(startDate, plan);
+            const paymentStatus = document.getElementById('form_payment_status').value;
+            const amountPaid = parseFloat(document.getElementById('form_amount_paid').value) || 0;
+
+            if (editIndex >= 0) {
+                members[editIndex] = { ...members[editIndex], name, age, contact, plan, startDate, expDate, paymentStatus, amountPaid };
+                showToast(`Member "${name}" updated successfully!`);
+            } else {
+                const nextNum = 1001 + members.length;
+                const newMember = {
+                    id: `GYM-${nextNum}`,
+                    name, age, contact, plan, startDate, expDate, paymentStatus, amountPaid
+                };
+                members.unshift(newMember);
+                showToast(`Member "${name}" registered with ID ${newMember.id}!`);
+            }
+
+            saveMembers();
+            switchTab('members');
+        }
+
+        function editMember(index) {
+            const m = members[index];
+            if (!m) return;
+            document.getElementById('editMemberIndex').value = index;
+            document.getElementById('formHeaderTitle').textContent = `Edit Member ${m.id} (${m.name})`;
+            document.getElementById('form_full_name').value = m.name;
+            document.getElementById('form_age').value = m.age;
+            document.getElementById('form_contact').value = m.contact;
+            document.getElementById('form_plan').value = m.plan;
+            document.getElementById('form_start_date').value = m.startDate;
+            document.getElementById('form_expiration_preview').value = m.expDate;
+            document.getElementById('form_payment_status').value = m.paymentStatus;
+            document.getElementById('form_amount_paid').value = m.amountPaid;
+            switchTab('add');
+        }
+
+        function deleteMember(index) {
+            const m = members[index];
+            if (confirm(`Are you sure you want to delete member record for "${m.name}"?`)) {
+                members.splice(index, 1);
+                saveMembers();
+                showToast(`Member "${m.name}" deleted.`, 'error');
+            }
+        }
+
+        function setMemberFilter(filter, btn) {
+            activeFilter = filter;
+            document.querySelectorAll('#directoryFilterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMembersTable();
+        }
+
+        function renderMembersTable() {
+            const tbody = document.getElementById('membersDirectoryTbody');
+            const search = document.getElementById('memberDirectorySearch').value.toLowerCase().trim();
+            
+            let filtered = members.filter(m => {
+                const status = getMembershipStatus(m.expDate);
+                if (activeFilter === 'active' && status !== 'Active') return false;
+                if (activeFilter === 'expired' && status !== 'Expired') return false;
+                if (activeFilter === 'pending' && m.paymentStatus !== 'Pending' && m.paymentStatus !== 'Overdue') return false;
+                if (search && !m.name.toLowerCase().includes(search) && !m.id.toLowerCase().includes(search) && !m.contact.includes(search)) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color: var(--text-muted);">No matching members found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((m) => {
+                const originalIndex = members.indexOf(m);
+                const status = getMembershipStatus(m.expDate);
+                return `
+                    <tr>
+                        <td><strong style="color: var(--primary);">${m.id}</strong></td>
+                        <td><strong>${m.name}</strong></td>
+                        <td>${m.age}</td>
+                        <td>${m.contact}</td>
+                        <td>${m.plan}</td>
+                        <td style="font-weight: 600; color: ${status === 'Active' ? '#34d399' : '#f87171'};">${m.expDate}</td>
+                        <td><span class="badge badge-${m.paymentStatus.toLowerCase()}">${m.paymentStatus}</span></td>
+                        <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
+                        <td style="text-align: right;">
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <button class="btn btn-secondary btn-sm" onclick="editMember(${originalIndex})"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteMember(${originalIndex})"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderDashboard() {
+            let activeCount = 0, expiredCount = 0, pendingCount = 0;
+            members.forEach(m => {
+                if (getMembershipStatus(m.expDate) === 'Active') activeCount++;
+                else expiredCount++;
+                if (m.paymentStatus === 'Pending' || m.paymentStatus === 'Overdue') pendingCount++;
+            });
+
+            document.getElementById('stat-total').textContent = members.length;
+            document.getElementById('stat-active').textContent = activeCount;
+            document.getElementById('stat-expired').textContent = expiredCount;
+            document.getElementById('stat-pending').textContent = pendingCount;
+
+            const recentTbody = document.getElementById('recentMembersTbody');
+            recentTbody.innerHTML = members.slice(0, 5).map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong><br><small style="color:var(--text-muted)">${m.id}</small></td>
+                    <td>${m.plan}</td>
+                    <td><span class="badge badge-${getMembershipStatus(m.expDate).toLowerCase()}">${getMembershipStatus(m.expDate)}</span></td>
+                </tr>
+            `).join('');
+
+            const expiredTbody = document.getElementById('expiredMembersTbody');
+            const expiredList = members.filter(m => getMembershipStatus(m.expDate) === 'Expired');
+            if (expiredList.length === 0) {
+                expiredTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 1.5rem; color: #34d399;"><i class="fa-solid fa-circle-check"></i> All memberships are currently active!</td></tr>`;
+            } else {
+                expiredTbody.innerHTML = expiredList.map(m => `
+                    <tr>
+                        <td><strong>${m.id}</strong></td>
+                        <td>${m.name}</td>
+                        <td style="color:#f87171; font-weight:600;">${m.expDate}</td>
+                        <td><button class="btn btn-primary btn-sm" onclick="prepareRenewMember('${m.id}')">Renew</button></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function renderSearchTable() {
+            const query = document.getElementById('liveSearchInput').value.toLowerCase().trim();
+            const tbody = document.getElementById('searchResultsTbody');
+            const filtered = members.filter(m => !query || m.name.toLowerCase().includes(query) || m.id.toLowerCase().includes(query) || m.contact.includes(query));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--text-muted);">No members match "${query}".</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(m => {
+                const originalIndex = members.indexOf(m);
+                const status = getMembershipStatus(m.expDate);
+                return `
+                    <tr>
+                        <td><strong style="color: var(--primary);">${m.id}</strong></td>
+                        <td><strong>${m.name}</strong></td>
+                        <td>${m.age}</td>
+                        <td>${m.contact}</td>
+                        <td>${m.plan}</td>
+                        <td style="color: ${status === 'Active' ? '#34d399' : '#f87171'}; font-weight:600;">${m.expDate}</td>
+                        <td><span class="badge badge-${m.paymentStatus.toLowerCase()}">${m.paymentStatus}</span></td>
+                        <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
+                        <td style="text-align: right;"><button class="btn btn-secondary btn-sm" onclick="editMember(${originalIndex})"><i class="fa-solid fa-pen"></i> Edit</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderStatusMonitor() {
+            const activeTbody = document.getElementById('statusActiveTbody');
+            const expiredTbody = document.getElementById('statusExpiredTbody');
+
+            const activeList = members.filter(m => getMembershipStatus(m.expDate) === 'Active');
+            const expiredList = members.filter(m => getMembershipStatus(m.expDate) === 'Expired');
+
+            activeTbody.innerHTML = activeList.length ? activeList.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong><br><small style="color:var(--text-muted)">${m.id} | ${m.contact}</small></td>
+                    <td>${m.plan}</td>
+                    <td style="color:#34d399; font-weight:600;">${m.expDate}</td>
+                </tr>
+            `).join('') : `<tr><td colspan="3" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No active members.</td></tr>`;
+
+            expiredTbody.innerHTML = expiredList.length ? expiredList.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong><br><small style="color:var(--text-muted)">${m.id} | ${m.contact}</small></td>
+                    <td>${m.plan}</td>
+                    <td style="color:#f87171; font-weight:600;">${m.expDate}</td>
+                    <td><button class="btn btn-primary btn-sm" onclick="prepareRenewMember('${m.id}')">Renew</button></td>
+                </tr>
+            `).join('') : `<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:#34d399;">No expired members!</td></tr>`;
+        }
+
+        function renderPayments() {
+            const select = document.getElementById('payment_member_select');
+            const currentSelected = select.value;
+            select.innerHTML = `<option value="">-- Choose Member --</option>` + members.map((m, i) => `
+                <option value="${i}" ${currentSelected == i ? 'selected' : ''}>${m.id} - ${m.name} (${m.paymentStatus})</option>
+            `).join('');
+
+            const historyTbody = document.getElementById('paymentHistoryTbody');
+            historyTbody.innerHTML = members.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong><br><small style="color:var(--text-muted)">${m.id}</small></td>
+                    <td style="color:#34d399; font-weight:700;">₱${parseFloat(m.amountPaid || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                    <td><span class="badge badge-${m.paymentStatus.toLowerCase()}">${m.paymentStatus}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function handlePaymentMemberChange() {
+            const index = document.getElementById('payment_member_select').value;
+            if (index === '') {
+                document.getElementById('pay_info_plan').textContent = '--';
+                document.getElementById('pay_info_exp').textContent = '--';
+                document.getElementById('pay_info_status').textContent = '--';
+                document.getElementById('pay_info_status').className = 'badge';
+                return;
+            }
+            const m = members[index];
+            const status = getMembershipStatus(m.expDate);
+            document.getElementById('pay_info_plan').textContent = m.plan;
+            document.getElementById('pay_info_exp').textContent = m.expDate;
+            document.getElementById('pay_info_status').textContent = status;
+            document.getElementById('pay_info_status').className = `badge badge-${status.toLowerCase()}`;
+        }
+
+        function prepareRenewMember(memberId) {
+            switchTab('payments');
+            const idx = members.findIndex(m => m.id === memberId);
+            if (idx !== -1) {
+                document.getElementById('payment_member_select').value = idx;
+                handlePaymentMemberChange();
+                document.getElementById('pay_extend_plan').value = 'Monthly';
+            }
+        }
+
+        function handleRecordPayment(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('payment_member_select').value);
+            if (isNaN(index) || !members[index]) return;
+
+            const amount = parseFloat(document.getElementById('pay_amount').value) || 0;
+            const newPaymentStatus = document.getElementById('pay_status_update').value;
+            const extendPlan = document.getElementById('pay_extend_plan').value;
+
+            members[index].amountPaid = (parseFloat(members[index].amountPaid) || 0) + amount;
+            members[index].paymentStatus = newPaymentStatus;
+
+            if (extendPlan) {
+                const today = new Date().toISOString().split('T')[0];
+                const baseDate = members[index].expDate >= today ? members[index].expDate : today;
+                members[index].expDate = calculateExpirationDate(baseDate, extendPlan);
+                members[index].plan = extendPlan;
+            }
+
+            saveMembers();
+            showToast(`Payment of ₱${amount.toFixed(2)} recorded for ${members[index].name}!`);
+            document.getElementById('pay_amount').value = '';
+            document.getElementById('pay_extend_plan').value = '';
+            handlePaymentMemberChange();
+        }
+
+        function refreshAllViews() {
+            renderDashboard();
+            renderMembersTable();
+            renderSearchTable();
+            renderStatusMonitor();
+            renderPayments();
+        }
+
+        // Initialize on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            resetAddMemberForm();
+            refreshAllViews();
+        });
+    </script>
+</body>
+</html>
